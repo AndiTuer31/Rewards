@@ -29,6 +29,7 @@
   --blue:#2B5FB8;
   --blue-l:#D6E4FF;
   --r:18px;--rs:11px;
+  --red:#B52A2A;--red-l:#FDEAEA;--red-d:#8C1A1A;
 }
 body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:max(100px,env(safe-area-inset-bottom,0px));-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;}
 
@@ -147,6 +148,56 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .reset-btn{background:none;border:1.5px solid var(--border);border-radius:100px;padding:9px 22px;font-family:'Sora',sans-serif;font-size:.77rem;color:var(--muted);cursor:pointer;transition:all .18s;}
 
 
+
+/* ── BAD HABIT CARDS ───────────────────────────── */
+.bad-divider{display:flex;align-items:center;gap:10px;margin:4px 0 16px;}
+.bad-divider span{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--red);white-space:nowrap;}
+.bad-divider::before,.bad-divider::after{content:'';flex:1;height:1px;background:var(--red-l);}
+
+.bcard{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  padding:18px 14px 16px;
+  cursor:pointer;
+  transition:transform .1s,background .18s,border-color .18s;
+  position:relative;
+  overflow:hidden;
+  user-select:none;
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+}
+.bcard::before{
+  content:'';position:absolute;left:0;top:16px;bottom:16px;
+  width:3px;border-radius:0 3px 3px 0;
+  background:var(--red-l);
+}
+.bcard:active{transform:scale(.96);transition:transform .1s;}
+.bcard.logged{background:var(--red-l);border-color:var(--red);}
+.bcard.logged::before{background:var(--red);}
+
+.bcard-count{
+  position:absolute;top:11px;right:11px;
+  min-width:22px;height:22px;padding:0 5px;
+  background:var(--red);border-radius:100px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:.68rem;font-weight:700;
+  font-family:'DM Mono',monospace;
+  transform:scale(0);transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.bcard.logged .bcard-count{transform:scale(1);}
+.bcard-emoji{font-size:1.7rem;margin-bottom:10px;display:block;}
+.bcard-name{font-size:.88rem;font-weight:600;margin-bottom:6px;line-height:1.35;}
+.bcard.logged .bcard-name{color:var(--red-d);}
+.bcard-pts{
+  display:inline-block;
+  font-family:'DM Mono',monospace;font-size:.74rem;font-weight:500;
+  background:var(--surface2);color:var(--muted);
+  padding:2px 8px;border-radius:100px;
+}
+.bcard.logged .bcard-pts{background:rgba(181,42,42,.12);color:var(--red);}
+.bcard-undo{font-size:.62rem;color:var(--red);font-weight:500;margin-top:6px;opacity:.75;}
+
 /* ── REWARD CARDS ──────────────────────────────── */
 .rcard{
   background:var(--surface);border:1.5px solid var(--border);
@@ -201,6 +252,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .h-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
 .h-dot.e{background:var(--green-l);}
 .h-dot.s{background:var(--orange-l);}
+.h-dot.bad{background:var(--red-l);}
+.h-pts.bad{color:var(--red);}
 .h-info{flex:1;}
 .h-name{font-size:.82rem;font-weight:500;}
 .h-time{font-size:.68rem;color:var(--muted);margin-top:1px;}
@@ -232,6 +285,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .danger-zone h3{font-size:.81rem;font-weight:700;color:#B52A2A;margin-bottom:10px;}
 .danger-btn{background:none;border:1.5px solid #FFAAAA;border-radius:var(--rs);padding:9px 14px;font-family:'Sora',sans-serif;font-size:.77rem;color:#B52A2A;cursor:pointer;transition:all .18s;width:100%;}
 .danger-btn:hover{background:#FFE4E4;}
+
+/* ── HISTORY FILTER ─────────────────────────────── */
+.hist-filters{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;}
+.hist-filters::-webkit-scrollbar{display:none;}
+.hfilt{padding:6px 14px;border-radius:100px;border:1.5px solid var(--border);background:none;font-family:'Sora',sans-serif;font-size:.74rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .18s;}
+.hfilt.active{background:var(--text);color:#fff;border-color:var(--text);}
 
 /* ── UTILS ─────────────────────────────────────── */
 .empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:.81rem;}
@@ -280,6 +339,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 <div class="sec active" id="tab-activities">
   <div class="sec-label" id="actDayLabel">Heute</div>
   <div class="grid" id="actGrid"></div>
+  <div class="bad-divider" id="badDivider" style="display:none"><span>⚠️ Bad Habits</span></div>
+  <div class="grid" id="badGrid"></div>
   <div class="reset-wrap">
     <button class="reset-btn" onclick="resetDay()">🔄 Tag zurücksetzen</button>
   </div>
@@ -301,6 +362,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 <!-- HISTORY -->
 <div class="sec" id="tab-history">
   <div class="sec-label">Verlauf</div>
+  <div class="hist-filters">
+    <button class="hfilt active" onclick="setHistFilter('all',this)">Alle</button>
+    <button class="hfilt" onclick="setHistFilter('earn',this)">✅ Aktivitäten</button>
+    <button class="hfilt" onclick="setHistFilter('bad',this)">⚠️ Bad Habits</button>
+    <button class="hfilt" onclick="setHistFilter('spend',this)">🎁 Eingelöst</button>
+  </div>
   <div id="histList"></div>
 </div>
 
@@ -326,6 +393,16 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <button class="add-btn" onclick="addRew()">+ Add</button>
     </div>
   </div>
+  <div class="msec">
+    <h3>⚠️ Bad Habits</h3>
+    <div id="mBads"></div>
+    <div class="add-form">
+      <input id="nBE" placeholder="📱" maxlength="4">
+      <input id="nBN" placeholder="Bad Habit">
+      <input id="nBP" type="number" placeholder="Pts" min="1" max="999">
+      <button class="add-btn" style="background:var(--red)" onclick="addBad()">+ Add</button>
+    </div>
+  </div>
   <div class="danger-zone">
     <h3>⚠️ Danger Zone</h3>
     <button class="danger-btn" onclick="resetAll()">Alle Daten löschen & neu starten</button>
@@ -343,6 +420,13 @@ const DACTS=[
   {id:4,emoji:'🦵',name:'Reha-Übungen',pts:15},
   {id:5,emoji:'🧠',name:'KI / Skill lernen',pts:10},
   {id:6,emoji:'⚽',name:'Aktiv draussen',pts:12},
+];
+const DBADS=[
+  {id:101,emoji:'📱',name:'Zu lange Social Media',pts:10},
+  {id:102,emoji:'🍟',name:'Fast Food gegessen',pts:15},
+  {id:103,emoji:'😴',name:'Zu spät ins Bett',pts:10},
+  {id:104,emoji:'⏭️',name:'Reha übersprungen',pts:20},
+  {id:105,emoji:'🛋️',name:'Ganzen Tag faul',pts:15},
 ];
 const DREWS=[
   {id:1,emoji:'🎮',name:'1h Gaming',cost:30},
@@ -367,6 +451,9 @@ function loadState(){
     dailyPts:    JSON.parse(localStorage.getItem('rr3_dpts')||'{}'),
     totalEarned: parseInt(localStorage.getItem('rr3_te')||'0'),
     totalSpent:  parseInt(localStorage.getItem('rr3_ts')||'0'),
+    bads:        JSON.parse(localStorage.getItem('rr3_bads')||'null')||DBADS,
+    badCounts:   JSON.parse(localStorage.getItem('rr3_bcounts')||'{}'),
+    bestStreak:  parseInt(localStorage.getItem('rr3_bs')||'0'),
   };
 }
 function saveState(){
@@ -381,6 +468,9 @@ function saveState(){
   localStorage.setItem('rr3_dpts',JSON.stringify(st.dailyPts));
   localStorage.setItem('rr3_te',st.totalEarned);
   localStorage.setItem('rr3_ts',st.totalSpent);
+  localStorage.setItem('rr3_bads',JSON.stringify(st.bads));
+  localStorage.setItem('rr3_bcounts',JSON.stringify(st.badCounts));
+  localStorage.setItem('rr3_bs',st.bestStreak);
 }
 let st=loadState();
 
@@ -395,12 +485,13 @@ function checkRollover(){
   const td=today();
   if(st.lastDay===td) return;
   if(st.lastDay===yesterday()){
-    if(st.done.length>0) st.streak+=1;
+    if(st.done.length>0){st.streak+=1;if(st.streak>st.bestStreak)st.bestStreak=st.streak;}
     else st.streak=0;
   } else if(st.lastDay!==''){
     st.streak=0;
   }
   st.done=[];
+  st.badCounts={};
   st.lastDay=td;
   saveState();
 }
@@ -437,6 +528,7 @@ function render(){
 
   updateBar();
   renderActs();
+  renderBads();
   renderRews();
   renderStats();
   renderHist();
@@ -447,16 +539,20 @@ function updateBar(){
   const td=today();
   const maxPts=st.acts.reduce((s,a)=>s+a.pts,0);
   const earned=st.dailyPts[td]||0;
+  // bad habit deductions today
+  const badDeducted=st.hist.filter(h=>h.type==='bad'&&h.day===td).reduce((s,h)=>s+h.pts,0);
+  const netto=Math.max(0,earned-badDeducted);
   const GOAL=Math.round(maxPts*0.7);
-  const pct=maxPts===0?0:Math.min(100,(earned/maxPts)*100);
-  const goalReached=earned>=GOAL;
+  const pct=maxPts===0?0:Math.min(100,(netto/maxPts)*100);
+  const goalReached=netto>=GOAL;
 
   const fill=document.getElementById('barFill');
   fill.style.width=pct+'%';
   fill.className='bar-fill '+(goalReached?'reached':'normal');
 
   const ps=document.getElementById('progStatus');
-  ps.textContent=goalReached?'🎯 Tagesziel erreicht!':earned+' / '+maxPts+' Pts';
+  const nettoLabel=badDeducted>0?` (−${badDeducted} Abzug)`:'';
+  ps.textContent=goalReached?'🎯 Tagesziel erreicht!':netto+' / '+maxPts+' Pts'+nettoLabel;
   ps.className='prog-status'+(goalReached?' goal':'');
 
   const pin=document.getElementById('goalPin');
@@ -497,6 +593,37 @@ function renderActs(){
   });
 }
 
+
+function renderBads(){
+  const g=document.getElementById('badGrid');
+  const div=document.getElementById('badDivider');
+  g.innerHTML='';
+  if(!st.bads.length){div.style.display='none';return;}
+  div.style.display='flex';
+  const td=today();
+  st.bads.forEach(b=>{
+    const count=(st.badCounts[td]&&st.badCounts[td][b.id])||0;
+    const logged=count>0;
+    const c=document.createElement('div');
+    c.className='bcard'+(logged?' logged':'');
+    c.innerHTML=`
+      <div class="bcard-count">${count}x</div>
+      <span class="bcard-emoji">${b.emoji}</span>
+      <div class="bcard-name">${b.name}</div>
+      <span class="bcard-pts">−${b.pts} Pts</span>
+      ${logged?'<div class="bcard-undo">↩ Lang drücken zum Rückgängig</div>':''}
+    `;
+    c.onclick=(e)=>{ripple(c,e);logBad(b);};
+    c.oncontextmenu=(e)=>{e.preventDefault();undoBad(b);};
+    // long press for undo on mobile
+    let pressTimer;
+    c.addEventListener('touchstart',()=>{pressTimer=setTimeout(()=>undoBad(b),600);},{passive:true});
+    c.addEventListener('touchend',()=>clearTimeout(pressTimer),{passive:true});
+    c.addEventListener('touchmove',()=>clearTimeout(pressTimer),{passive:true});
+    g.appendChild(c);
+  });
+}
+
 function renderRews(){
   const l=document.getElementById('rewList');
   l.innerHTML='';
@@ -527,31 +654,61 @@ function renderRews(){
 
 function renderStats(){
   const days=last7();
-  const maxPts=Math.max(...days.map(d=>st.dailyPts[d]||0),1);
+  const td=today();
+  // net pts per day (earned - bad deductions)
+  const netDay=d=>{
+    const earned=st.dailyPts[d]||0;
+    const bad=st.hist.filter(h=>h.type==='bad'&&h.day===d).reduce((s,h)=>s+h.pts,0);
+    return Math.max(0,earned-bad);
+  };
+  const maxPts=Math.max(...days.map(d=>netDay(d)),1);
   const bars=document.getElementById('weekBars');
   bars.innerHTML='';
   const dow=['So','Mo','Di','Mi','Do','Fr','Sa'];
   days.forEach(d=>{
-    const pts=st.dailyPts[d]||0;
-    const pct=Math.max(Math.round((pts/maxPts)*100),2);
-    const isToday=d===today();
+    const net=netDay(d);
+    const bad=st.hist.filter(h=>h.type==='bad'&&h.day===d).reduce((s,h)=>s+h.pts,0);
+    const pct=Math.max(Math.round((net/maxPts)*100),2);
+    const badPct=net>0?Math.min(20,Math.round((bad/(net+bad))*30)):0;
+    const isToday=d===td;
     const dd=new Date(d+'T12:00:00');
     const col=document.createElement('div');
     col.className='bar-col';
-    col.innerHTML=`<div class="bar-seg${pts>0?' filled':''}" style="height:${pct}%"></div>
+    col.innerHTML=`
+      <div style="width:100%;display:flex;flex-direction:column;align-items:stretch;gap:1px;height:${pct}%">
+        ${bad>0?`<div style="height:${badPct}%;min-height:3px;background:var(--red-l);border-radius:4px 4px 0 0;flex-shrink:0"></div>`:''}
+        <div class="bar-seg${net>0?' filled':''}" style="height:100%;border-radius:${bad>0?'0':'4px 4px'} 0 0"></div>
+      </div>
       <div class="bar-day${isToday?' today':''}">${dow[dd.getDay()]}</div>`;
     bars.appendChild(col);
   });
 
   const weekPts=days.reduce((s,d)=>s+(st.dailyPts[d]||0),0);
+  const weekBad=st.hist.filter(h=>h.type==='bad'&&days.includes(h.day)).reduce((s,h)=>s+h.pts,0);
   const weekActs=st.hist.filter(h=>h.type==='earn'&&days.includes(h.day)).length;
+  const weekBadCount=st.hist.filter(h=>h.type==='bad'&&days.includes(h.day)).length;
+  // week goal: 5 active days out of 7
+  const activeDays=days.filter(d=>(st.dailyPts[d]||0)>0).length;
+  const weekGoal=5;
+  const weekGoalPct=Math.round((activeDays/weekGoal)*100);
+
   document.getElementById('statsGrid').innerHTML=`
     <div class="stat-box"><div class="stat-val g">${st.pts}</div><div class="stat-key">Aktuelle Punkte</div></div>
-    <div class="stat-box"><div class="stat-val o">${weekPts}</div><div class="stat-key">Punkte diese Woche</div></div>
+    <div class="stat-box"><div class="stat-val o">${weekPts}</div><div class="stat-key">Verdient diese Woche</div></div>
     <div class="stat-box"><div class="stat-val b">${weekActs}</div><div class="stat-key">Aktivitäten diese Woche</div></div>
+    <div class="stat-box"><div class="stat-val r">−${weekBad}</div><div class="stat-key">Bad Habit Abzüge (${weekBadCount}x)</div></div>
     <div class="stat-box"><div class="stat-val r">${st.streak}</div><div class="stat-key">Streak 🔥</div></div>
-    <div class="stat-box"><div class="stat-val g">${st.totalEarned}</div><div class="stat-key">Total verdient</div></div>
-    <div class="stat-box"><div class="stat-val r">${st.totalSpent}</div><div class="stat-key">Total eingelöst</div></div>
+    <div class="stat-box"><div class="stat-val o">${st.bestStreak}</div><div class="stat-key">Bester Streak 🏆</div></div>
+    <div class="stat-box" style="grid-column:1/-1">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Wochenziel</div>
+        <div style="font-size:.72rem;font-weight:700;color:var(--text)">${activeDays} / ${weekGoal} aktive Tage</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:100px;height:8px;overflow:hidden">
+        <div style="height:100%;width:${Math.min(100,weekGoalPct)}%;background:${activeDays>=weekGoal?'linear-gradient(90deg,var(--gold),#E8C040)':'linear-gradient(90deg,var(--blue),#5B8FE8)'};border-radius:100px;transition:width .5s"></div>
+      </div>
+      <div style="font-size:.68rem;color:var(--muted);margin-top:5px">${activeDays>=weekGoal?'🎉 Wochenziel erreicht!':'Noch '+(weekGoal-activeDays)+' Tag(e) bis zum Wochenziel'}</div>
+    </div>
   `;
 }
 
@@ -560,7 +717,8 @@ function renderHist(){
   l.innerHTML='';
   if(!st.hist.length){l.innerHTML='<div class="empty"><div class="ei">📋</div>Noch keine Einträge.</div>';return;}
   const byDay={};
-  [...st.hist].reverse().forEach(h=>{if(!byDay[h.day])byDay[h.day]=[];byDay[h.day].push(h);});
+  const filtered=_histFilter==='all'?st.hist:st.hist.filter(h=>h.type===_histFilter);
+  [...filtered].reverse().forEach(h=>{if(!byDay[h.day])byDay[h.day]=[];byDay[h.day].push(h);});
   Object.keys(byDay).sort((a,b)=>b.localeCompare(a)).slice(0,14).forEach(day=>{
     const grp=document.createElement('div');
     grp.className='hday-group';
@@ -572,7 +730,7 @@ function renderHist(){
       const sign=h.type==='earn'?'+':'−';
       el.innerHTML=`<div class="h-dot ${h.type}">${h.emoji}</div>
         <div class="h-info"><div class="h-name">${h.name}</div><div class="h-time">${h.time}</div></div>
-        <div class="h-pts ${h.type}">${sign}${h.pts} Pts</div>`;
+        <div class="h-pts ${h.type==='bad'?'bad':h.type}">${sign}${h.pts} Pts</div>`;
       grp.appendChild(el);
     });
     l.appendChild(grp);
@@ -580,6 +738,17 @@ function renderHist(){
 }
 
 function renderManage(){
+  const mb=document.getElementById('mBads');
+  mb.innerHTML='';
+  st.bads.forEach(b=>{
+    const el=document.createElement('div');
+    el.className='mitem';
+    el.innerHTML=`<span class="mi-e">${b.emoji}</span>
+      <span class="mi-n">${b.name}</span>
+      <span class="mi-p" style="color:var(--red)">−${b.pts} Pts</span>
+      <button class="del" onclick="delBad(${b.id})">✕</button>`;
+    mb.appendChild(el);
+  });
   const ma=document.getElementById('mActs');
   ma.innerHTML='';
   st.acts.forEach(a=>{
@@ -616,6 +785,7 @@ function earn(a){
   st.lastDay=td;
   st.hist.push({emoji:a.emoji,name:a.name,pts:a.pts,type:'earn',day:td,
     time:new Date().toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit'})});
+  if(st.streak>st.bestStreak)st.bestStreak=st.streak;
   saveState(); render(); bumpPts();
   toast(`${a.emoji} +${a.pts} Pts — ${a.name}!`);
   if(st.pts>0&&st.pts%100===0) confetti();
@@ -652,6 +822,44 @@ function resetDay(){
   toast('🔄 Aktivitäten zurückgesetzt.');
 }
 
+function logBad(b){
+  const td=today();
+  if(!st.badCounts[td]) st.badCounts[td]={};
+  st.badCounts[td][b.id]=(st.badCounts[td][b.id]||0)+1;
+  st.pts=Math.max(0,st.pts-b.pts);
+  st.lastDay=td;
+  st.hist.push({emoji:b.emoji,name:b.name,pts:b.pts,type:'bad',day:td,
+    time:new Date().toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit'})});
+  saveState(); render();
+  toast(`${b.emoji} −${b.pts} Pts — ${b.name}`);
+}
+
+function undoBad(b){
+  const td=today();
+  if(!st.badCounts[td]||!st.badCounts[td][b.id]) return;
+  st.badCounts[td][b.id]=Math.max(0,st.badCounts[td][b.id]-1);
+  st.pts+=b.pts;
+  const idx=st.hist.map((h,i)=>({h,i})).reverse().find(({h})=>h.type==='bad'&&h.name===b.name&&h.day===td);
+  if(idx) st.hist.splice(idx.i,1);
+  saveState(); render();
+  toast(`↩️ ${b.name} rückgängig.`);
+}
+
+function addBad(){
+  const e=document.getElementById('nBE').value.trim()||'⚠️';
+  const n=document.getElementById('nBN').value.trim();
+  const p=parseInt(document.getElementById('nBP').value);
+  if(!n||!p||p<1){toast('⚠️ Name und Punkte eingeben.');return;}
+  st.bads.push({id:st.nextId++,emoji:e,name:n,pts:p});
+  document.getElementById('nBE').value='';
+  document.getElementById('nBN').value='';
+  document.getElementById('nBP').value='';
+  saveState(); render();
+  toast(`✅ "${n}" hinzugefügt!`);
+}
+
+function delBad(id){st.bads=st.bads.filter(b=>b.id!==id);saveState();render();}
+
 function addAct(){
   const e=document.getElementById('nAE').value.trim()||'⚡';
   const n=document.getElementById('nAN').value.trim();
@@ -683,7 +891,7 @@ function delRew(id){st.rews=st.rews.filter(r=>r.id!==id);saveState();render();}
 
 function resetAll(){
   if(!confirm('Wirklich ALLE Daten löschen?')) return;
-  ['pts','acts','rews','done','hist','streak','lastDay','nid','dpts','te','ts']
+  ['pts','acts','rews','done','hist','streak','lastDay','nid','dpts','te','ts','bads','bcounts','bs']
     .forEach(k=>localStorage.removeItem('rr3_'+k));
   st=loadState(); render();
   toast('🗑️ Alle Daten gelöscht.');
@@ -733,6 +941,14 @@ function confetti(){
     document.body.appendChild(el);
     setTimeout(()=>el.remove(),2400);
   }
+}
+
+let _histFilter='all';
+function setHistFilter(f,btn){
+  _histFilter=f;
+  document.querySelectorAll('.hfilt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHist();
 }
 
 render();
